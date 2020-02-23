@@ -1,0 +1,42 @@
+version: '3.7'
+
+services:
+  traefik:
+    image: traefik:2.0.4
+    container_name: local_traefik
+    restart: unless-stopped
+    command:
+      - --api.insecure=true
+      - --providers.docker=true
+      - --providers.docker.network=traefik
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`monitor.localhost`)"
+      - "traefik.http.routers.api.service=api@internal"
+
+  dns:
+    container_name: dns
+    image: andyshinn/dnsmasq:2.78
+    restart: unless-stopped
+    ports:
+      - '53535:53/tcp'
+      - '53535:53/udp'
+    volumes:
+      - ./dnsmasq.d/tlds.conf:/etc/dnsmasq.d/tlds.conf
+    cap_add:
+      - NET_ADMIN
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    external: true                                                                                                                                                                                      1,1         Alles
