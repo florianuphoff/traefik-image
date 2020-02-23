@@ -1,5 +1,9 @@
 version: '3.7'
 
+networks:
+  traefik:
+    external: true       
+
 services:
   traefik:
     image: traefik:2.0.4
@@ -36,7 +40,3 @@ services:
       - NET_ADMIN
     networks:
       - traefik
-
-networks:
-  traefik:
-    external: true                                                                                                                                                                                      1,1         Alles
